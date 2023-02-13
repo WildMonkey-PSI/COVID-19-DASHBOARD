@@ -15,8 +15,6 @@ dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 global data_csv
 data_csv = pd.read_csv('https://data.humdata.org/hxlproxy/api/data-preview.csv?url=https%3A%2F%2Fraw.githubusercontent.com%2FCSSEGISandData%2FCOVID-19%2Fmaster%2Fcsse_covid_19_data%2Fcsse_covid_19_time_series%2Ftime_series_covid19_confirmed_global.csv&filename=time_series_covid19_confirmed_global.csv')
-#data_csv = pd.read_csv('C:\\Users\\kucza\\Downloads\\time_series_covid19_confirmed_global (2).csv')
-
 
 def setSelectorsToDropDown(data_csv):
     countries_all = []
@@ -136,7 +134,6 @@ def countAllData():
 
     countries = selectAllCountriesToList(data_csv)
     total_rank = countAllCasesForCountries(countries)
-    print(total_rank)
     dic = {}
     for country in countries:
         dic[country] = countLastCasesPerDayForOneCountry(country)
@@ -152,6 +149,8 @@ def countAllData():
             leastCasesPerDay[x[0]] = x[1]
             break
         countriesWithoutDisease+=1
+
+countAllData()
 
 app = dash.Dash(__name__)
 server = app.server
@@ -200,14 +199,7 @@ def update_outputt(n_clicks):
     }
     return [figure]
 
-@app.callback(
-    [dash.dependencies.Output('liveUpdate', 'children')],
-    [dash.dependencies.Input('thirdDiv', 'children')])
 
-def update_outputt(n_clicks):
-    now = datetime.now()
-    dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
-    return [html.B(str(dt_string)+" ",style={'textAlign':'center'})]
 
 @app.callback(
     [dash.dependencies.Output('initDiv', 'children')],
@@ -218,17 +210,6 @@ def update_outputt(n_clicks):
     start = time.time()
     return [html.Div()]
 
-@app.callback(
-    [dash.dependencies.Output('button', 'children')],
-    [dash.dependencies.Input('thirdDiv', 'children')])
-
-def update_outputt(n_clicks):
-    global start
-    end = time.time()
-    print("Odświeżenie:")
-    print(end - start)
-
-    return [html.Button("Odśwież dane",style={'visibility':'visible'} , id='button')]
 
 @app.callback(
     [dash.dependencies.Output('basicData', 'children')],
@@ -239,12 +220,13 @@ def update_outputty(n_clicks):
     return [html.Div([
         html.Div(id = 'firstDiv'),
         html.Div(id = 'secondDiv'),
-        html.Div(id = 'thirdDiv')],style={'visibility':'hidden'})]
+        html.Div(id = 'thirdDiv')],style={'visibility':'visible'})]
         
 @app.callback(
     [dash.dependencies.Output('firstDiv', 'children')],
     [dash.dependencies.Output('secondDiv', 'children')],
     [dash.dependencies.Output('thirdDiv', 'children')],
+    [dash.dependencies.Output('liveUpdate', 'children')],
     [dash.dependencies.Input('initDiv', 'children')])
 
 def update_outputty(n_clicks):
@@ -266,7 +248,8 @@ def update_outputty(n_clicks):
         html.B("{}".format(countriesWithoutDisease)),
         " krajach"
         ], style={'textAlign':'center', 'visibility':'visible', 'paddingBottom':'3%'})
-        ]
+        ],[html.Button("Odśwież dane",style={'visibility':'visible'} , id='button')]
+
 
 @app.callback(
     [dash.dependencies.Output('dataDiv', 'children')],
@@ -313,8 +296,6 @@ def update_output(value):
     return figure,figure1
 
 end = time.time()
-print("Uruchomienie:")
-print(end - start)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server("127.0.0.1")
