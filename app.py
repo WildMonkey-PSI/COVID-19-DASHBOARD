@@ -227,10 +227,13 @@ def update_outputty(n_clicks):
     [dash.dependencies.Output('secondDiv', 'children')],
     [dash.dependencies.Output('thirdDiv', 'children')],
     [dash.dependencies.Output('liveUpdate', 'children')],
+    [dash.dependencies.Output('button', 'children')],
     [dash.dependencies.Input('initDiv', 'children')])
 
 def update_outputty(n_clicks):
     countAllData()
+    now = datetime.now()
+    dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
     return [html.Div([
         "Odnotowano najwięcej przypadków zakażeń w kraju: " ,
         html.B("{}".format(countedCasesAllCountriesPerDay[0][0])), 
@@ -248,6 +251,7 @@ def update_outputty(n_clicks):
         html.B("{}".format(countriesWithoutDisease)),
         " krajach"
         ], style={'textAlign':'center', 'visibility':'visible', 'paddingBottom':'3%'})
+        ],[html.B(str(dt_string)+" ",style={'textAlign':'center'})
         ],[html.Button("Odśwież dane",style={'visibility':'visible'} , id='button')]
 
 
